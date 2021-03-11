@@ -30,4 +30,4 @@ In this assignment, we're going to :
 
 5- Show if there is any differences in activity patterns between weekdays and weekends
 
-You can view my work in this [HTML File](../Project1.html)
+You can view my work in this [HTML File](http://htmlpreview.github.io/?https://github.com/mehdi99hamd/Reproducible_Research_Project_1/blob/main/Project1.html)

@@ -29,3 +29,5 @@ In this assignment, we're going to :
 4- Imput missing values
 
 5- Show if there is any differences in activity patterns between weekdays and weekends
+
+You can view my work in this [HTML File](file:///D:/Auto_formation/Coursera_Reproducible_Research/Project%201/Project1.html)

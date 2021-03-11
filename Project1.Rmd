@@ -1,0 +1,226 @@
+---
+title: "Reproducible Research - Project 1"
+author: "Mehdi HAMDOUNE"
+date: "3/11/2021"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+---
+
+
+
+## **Instroduction**
+
+It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a [Fitbit](https://www.fitbit.com/global/fr/home), [Nike Fuelband](https://www.nike.com/help/a/why-cant-i-sync), or [Jawbone Up](https://www.jawbone.com/up). These type of devices are part of the “quantified self” movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. But these data remain under-utilized both because the raw data are hard to obtain and there is a lack of statistical methods and software for processing and interpreting the data.
+
+This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
+
+The data for this assignment can be downloaded from the course web site:
+
+Dataset: [Activity monitoring data](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip) [52K]
+
+The variables included in this dataset are:
+
+ * steps: Number of steps taking in a 5-minute interval (missing values are coded as NA)
+
+ * date: The date on which the measurement was taken in YYYY-MM-DD format
+
+ * interval: Identifier for the 5-minute interval in which measurement was taken
+
+The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
+
+
+
+## **Loading and preprocessing the data**
+
+### 1- Loading the data
+
+```{r,  warning = FALSE, message = FALSE } 
+setwd("D:/Auto_formation/Coursera_Reproducible_Research/Project 1")
+
+# Importing The LIbrairies
+library(tidyr)
+library(ggplot2)
+
+# Importing The Dataset
+Activity <- read.csv("activity.csv")
+
+head(Activity, 5)
+```
+
+
+```{r,  warning = FALSE, message = FALSE } 
+str(Activity, 5)
+```
+
+
+### 2- Preprocessing the data
+
+```{r,  warning = FALSE, message = FALSE } 
+
+# Format date to Type Date
+Activity$date <- as.Date(Activity$date, "%Y-%m-%d")
+
+#Creating weekday variable
+weekday <- weekdays(Activity$date)
+
+Activity <- cbind(Activity, weekday)
+
+summary(Activity)
+```
+
+
+## **What is mean total number of steps taken per day?**
+
+### 1- The total number of steps taken per day
+
+```{r,  warning = FALSE, message = FALSE } 
+
+#Calculating the total number of steps per day
+totalSteps <- aggregate(steps ~ weekday, Activity, sum, na.rm = TRUE)
+
+
+head(totalSteps,7)
+```
+
+
+### 2- Make a histogram of the total number of steps taken each day
+
+
+```{r,  warning = FALSE, message = FALSE } 
+
+hist(totalSteps$steps, main = "Total number of steps taken per day", xlab = 
+       "Total steps taken per day", col ="cyan3",breaks = seq(60000,100000, by = 3000))
+```
+
+### 3- Calculate and report the mean and median of the total number of steps taken per day
+
+#### The mean
+
+```{r,  warning = FALSE, message = FALSE } 
+mean(totalSteps$steps)
+```
+
+
+#### The median
+
+```{r,  warning = FALSE, message = FALSE } 
+median(totalSteps$steps)
+```
+
+
+## **What is the average daily activity pattern?**
+
+### 1- Make a time series plot of the 5-minute interval and the average number of steps taken, averaged across all days
+
+```{r,  warning = FALSE, message = FALSE } 
+stapes_int <- aggregate(steps ~ interval, Activity, mean, na.rm = TRUE)
+
+#Plotting of the 5-minute interval and the average number of steps
+ggplot(stapes_int, aes(interval, steps, col = "darkslategray1")) +
+  geom_line(color='cyan3') +
+  ggtitle("Average number of steps per interval") +
+  ylab(expression("Average number of staps taken")) +
+  xlab("5-minute interval") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+### 2- Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+```{r,  warning = FALSE, message = FALSE } 
+stapes_int[which.max(stapes_int$steps),]$interval
+```
+
+
+## **Imputing missing values**
+
+### 1- Calculate and report the total number of missing values in the dataset
+
+```{r,  warning = FALSE, message = FALSE } 
+sum(is.na(Activity$steps))
+```
+
+
+### 2- Fill the missing data (the mean for that 5-minute interval)
+
+```{r,  warning = FALSE, message = FALSE } 
+
+fill <- stapes_int$steps[match(Activity$interval,stapes_int$interval)]
+                            
+```
+
+
+### 3- Create a new dataset that is equal to the original dataset but with the missing data filled in
+
+```{r,  warning = FALSE, message = FALSE } 
+
+activity.clean <- transform(Activity, steps = ifelse(is.na(Activity$steps), 
+                             yes=fill, no = Activity$steps))
+
+totalSteps.clean <- aggregate(steps ~ weekday, activity.clean, sum)
+totalSteps.clean
+```
+
+
+### 4- Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.
+
+```{r,  warning = FALSE, message = FALSE } 
+
+totalSteps.clean <- aggregate(steps ~ weekday, activity.clean, sum)
+
+hist(totalSteps.clean$steps, main = "Total number of steps taken per day", xlab = 
+      "Total steps taken per day", col ="cyan3",breaks = seq(70000,120000, by = 6000))
+
+```
+
+
+#### The mean
+
+```{r,  warning = FALSE, message = FALSE } 
+
+mean(totalSteps.clean$steps)
+
+```
+
+
+#### The median
+
+```{r,  warning = FALSE, message = FALSE } 
+
+median(totalSteps.clean$steps)
+
+```
+
+
+## **Are there differences in activity patterns between weekdays and weekends?**
+
+### 1- Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day
+
+```{r,  warning = FALSE, message = FALSE } 
+
+activity.clean$datetype <- sapply(activity.clean$date, function(x) {
+        if (weekdays(x) == "Saturday" | weekdays(x) =="Sunday") 
+                {y <- "Weekend"} 
+        else 
+                {y <- "Weekday"}
+        y
+        })
+
+head(activity.clean, 5)
+```
+
+
+### 2- Make a panel plot containing a time series plot of the 5-minute interval and the average number of steps taken, averaged across all weekday days or weekend days
+
+```{r,  warning = FALSE, message = FALSE } 
+
+activity.datetype <- aggregate(steps~interval+datetype, activity.clean, mean)
+
+ggplot(activity.datetype, aes(x = interval, y = steps, color = datetype))+ 
+  geom_line() + 
+  labs(title = "Average daily steps by date type", x ="Interval", y = "Average number of steps") +
+  facet_wrap(~datetype, ncol = 1, nrow = 2) +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```

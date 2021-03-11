@@ -92,6 +92,13 @@ head(totalSteps,7)
 
 hist(totalSteps$steps, main = "Total number of steps taken per day", xlab = 
        "Total steps taken per day", col ="cyan3",breaks = seq(0,25000, by = 2500))
+
+abline(v = mean(totalSteps$steps),lty = 1, lwd = 2, col = "dodgerblue")
+abline(v = median(totalSteps$steps),lty = 2, lwd = 3, col = "lightskyblue1")
+
+legend(x = "topright", c("Mean", "Median"), col = c("dodgerblue", "lightskyblue1"),
+       lty = c(1, 2), lwd = c(2, 3))
+
 ```
 
 ### 3- Calculate and report the mean and median of the total number of steps taken per day
@@ -124,6 +131,7 @@ ggplot(stapes_int, aes(interval, steps, col = "darkslategray1")) +
   ylab(expression("Average number of staps taken")) +
   xlab("5-minute interval") +
   theme(plot.title = element_text(hjust = 0.5))
+
 ```
 
 
@@ -174,6 +182,12 @@ names(totalSteps.clean)<- c("dates", "steps")
 
 hist(totalSteps.clean$steps, main = "Total number of steps taken per day", xlab = 
       "Total steps taken per day", col ="cyan3",breaks = seq(0,25000, by = 2500))
+
+abline(v = mean(totalSteps.clean$steps),lty = 1, lwd = 2, col = "dodgerblue")
+abline(v = median(totalSteps.clean$steps),lty = 2, lwd = 3, col = "lightskyblue1")
+
+legend(x = "topright", c("Mean", "Median"), col = c("dodgerblue", "lightskyblue1"),
+       lty = c(1, 2), lwd = c(2, 3))
 
 ```
 

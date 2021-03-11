@@ -77,8 +77,9 @@ summary(Activity)
 ```{r,  warning = FALSE, message = FALSE } 
 
 #Calculating the total number of steps per day
-totalSteps <- aggregate(steps ~ weekday, Activity, sum, na.rm = TRUE)
+totalSteps <- with(Activity, aggregate(steps, by = list(date), FUN = sum, na.rm = TRUE))
 
+names(totalSteps)<- c("dates", "steps")
 
 head(totalSteps,7)
 ```
@@ -90,7 +91,7 @@ head(totalSteps,7)
 ```{r,  warning = FALSE, message = FALSE } 
 
 hist(totalSteps$steps, main = "Total number of steps taken per day", xlab = 
-       "Total steps taken per day", col ="cyan3",breaks = seq(60000,100000, by = 3000))
+       "Total steps taken per day", col ="cyan3",breaks = seq(0,25000, by = 2500))
 ```
 
 ### 3- Calculate and report the mean and median of the total number of steps taken per day
@@ -158,8 +159,7 @@ fill <- stapes_int$steps[match(Activity$interval,stapes_int$interval)]
 activity.clean <- transform(Activity, steps = ifelse(is.na(Activity$steps), 
                              yes=fill, no = Activity$steps))
 
-totalSteps.clean <- aggregate(steps ~ weekday, activity.clean, sum)
-totalSteps.clean
+head(activity.clean, 5)
 ```
 
 
@@ -167,10 +167,13 @@ totalSteps.clean
 
 ```{r,  warning = FALSE, message = FALSE } 
 
-totalSteps.clean <- aggregate(steps ~ weekday, activity.clean, sum)
+totalSteps.clean <- with(activity.clean, aggregate(steps, by = list(date), FUN = sum, na.rm = TRUE))
+
+names(totalSteps.clean)<- c("dates", "steps")
+
 
 hist(totalSteps.clean$steps, main = "Total number of steps taken per day", xlab = 
-      "Total steps taken per day", col ="cyan3",breaks = seq(70000,120000, by = 6000))
+      "Total steps taken per day", col ="cyan3",breaks = seq(0,25000, by = 2500))
 
 ```
 
